@@ -1,17 +1,37 @@
-import React, { useState } from 'react'
-import HelloWorld from './components/HelloWorld'
-import CallTracker from 'jest-jasmine2/build/jasmine/CallTracker'
+import React, { useState, useEffect } from 'react'
+import ExpenseItem from './components/ExpenseItem'
 
 const App = () => {
   const [expenses, setExpenses] = useState([])
+  const getDataFromAPI = async () => {
+    const resp = await fetch(
+      'https://sdg-expense-api.herokuapp.com/api/expense'
+    )
+    const data = await resp.json()
+    console.log(data)
+    setExpenses(data)
+  }
+
+  useEffect(() => {
+    console.log('using the effect')
+    getDataFromAPI()
+  }, [])
+
   return (
     <>
       Expense Tracker
       <ul>
-        <li>Expense 1</li>
-        <li>Expense 1</li>
-        <li>Expense 1</li>
-        <li>Expense 1</li>
+        {expenses.map(expense => {
+          return (
+            <ExpenseItem
+              key={expense.id}
+              note={expense.note}
+              type={expense.type}
+              when={expense.when}
+              amount={expense.amount}
+            />
+          )
+        })}
       </ul>
     </>
   )
